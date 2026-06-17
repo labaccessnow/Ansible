@@ -1,0 +1,9 @@
+---
+# Safe defaults. A host_vars file only has to override what's actually different.
+proxmox_node: pve1
+vm_spec:
+  cores: 2
+  memory: 4096
+  scsihw: virtio-scsi-single
+  ostype: l26
+  autostart: true

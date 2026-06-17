@@ -1,0 +1,17 @@
+---
+# The remediation the EDA rulebook calls. Closes the loop: alert fires -> port isolated.
+# Move the offending port to a quarantine VLAN rather than 'shutdown' it — you keep the
+# endpoint visible (still gets an IP in the dead-end VLAN) for forensics instead of going dark.
+- name: Quarantine an access port
+  hosts: "{{ ansible_eda.event.payload.labels.switch | default('ios') }}"
+  gather_facts: false
+  vars:
+    port: "{{ ansible_eda.event.payload.labels.interface }}"
+    quarantine_vlan: 999
+  tasks:
+    - name: "Move {{ port }} into VLAN {{ quarantine_vlan }}"
+      cisco.ios.ios_config:
+        parents: "interface {{ port }}"
+        lines:
+          - "switchport access vlan {{ quarantine_vlan }}"
+          - "description QUARANTINED by EDA"

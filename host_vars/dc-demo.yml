@@ -1,0 +1,13 @@
+---
+# The ONLY thing that differs to build a Windows Domain Controller instead of a Linux box.
+# Same role, different facts.
+vm_spec:
+  vmid: 126
+  name: dc-demo
+  cores: 2
+  memory: 4096
+  ostype: win11               # Windows guest type
+  scsihw: virtio-scsi-single
+  net:
+    net0: "virtio,bridge=vmbr0,tag=1800"
+  autostart: true

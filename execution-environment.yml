@@ -1,0 +1,21 @@
+---
+# Ansible Builder v3 execution environment: a container with the exact collections and
+# Python deps this automation needs, so my laptop, CI, and the controller run identical code.
+#   ansible-builder build -t lab-ee:latest
+version: 3
+
+images:
+  base_image:
+    name: quay.io/ansible/awx-ee:latest
+
+dependencies:
+  ansible_core:
+    package_pip: ansible-core>=2.16
+  ansible_runner:
+    package_pip: ansible-runner
+  galaxy: requirements.yml          # the same pins the playbooks use
+  python:
+    - proxmoxer                     # community.general.proxmox_kvm needs this
+    - requests
+  system:
+    - openssh-clients [platform:rpm]

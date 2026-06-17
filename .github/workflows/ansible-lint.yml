@@ -1,0 +1,15 @@
+# Lint and syntax-check on every push/PR. The automation gets reviewed like code.
+name: lint
+on: [push, pull_request]
+
+jobs:
+  ansible-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned collections
+        run: |
+          pip install ansible-core
+          ansible-galaxy collection install -r requirements.yml
+      - name: ansible-lint
+        uses: ansible/ansible-lint@main

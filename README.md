@@ -4,6 +4,23 @@ Idempotent provisioning and configuration management for network and compute —
 rebuilt from a repository, not hand-assembled. The thing I optimize for is being able to run it
 again, safely, and get the same result.
 
+## What's in this repo
+A small but complete automation tree — provisioning, network ops, event-driven remediation,
+and the packaging/CI that keeps runs reproducible:
+
+| File | What it shows |
+|---|---|
+| [`provision.yml`](provision.yml) + [`roles/proxmox_vm/`](roles/proxmox_vm) | One reusable **role** builds any VM from per-host vars |
+| [`host_vars/dc-demo.yml`](host_vars/dc-demo.yml) | The *only* thing that differs between builds — facts, not forks |
+| [`playbooks/network_backup.yml`](playbooks/network_backup.yml) | **Config backup as code** (cisco.ios native backup, diffable history) |
+| [`rulebooks/alert_remediation.yml`](rulebooks/alert_remediation.yml) | **Event-Driven Ansible** — react to a critical alert |
+| [`playbooks/quarantine_port.yml`](playbooks/quarantine_port.yml) | The remediation the rulebook calls — closes the loop |
+| [`execution-environment.yml`](execution-environment.yml) | **Ansible Builder v3** EE — pinned, containerized deps |
+| [`requirements.yml`](requirements.yml) | Collection pins (the version-drift lesson, encoded) |
+| [`.github/workflows/ansible-lint.yml`](.github/workflows/ansible-lint.yml) | **CI** — lint + syntax-check on every push/PR |
+
+> Placeholders throughout; API tokens and device creds come from SOPS / a vault, not the repo.
+
 ## What it looks like in practice
 
 One reusable role provisions different machine types from per-host variables, and the run is

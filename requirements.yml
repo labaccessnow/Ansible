@@ -1,0 +1,9 @@
+---
+# Pin collections. Version drift is the silent killer — community.general 12.x changed
+# proxmox_kvm's 'numa' from a boolean to a dict and broke a working play with nothing in
+# my code changed. Pin, then read the changelog before you bump.
+collections:
+  - name: community.general
+    version: ">=9.0.0,<13.0.0"
+  - name: cisco.ios
+  - name: ansible.eda          # Event-Driven Ansible (rulebooks)

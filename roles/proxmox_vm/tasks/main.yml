@@ -1,0 +1,33 @@
+---
+# One role, many machine types. Everything that differs between a DC, an ISE node, or a
+# web box lives in host_vars; this task file is the single code path that builds any of them.
+# Idempotent: 'state: present' is a no-op once the VM exists, so re-runs are safe.
+- name: "Create VM {{ vm_spec.vmid }} ({{ vm_spec.name }})"
+  community.general.proxmox_kvm:
+    api_host: "{{ proxmox_api_host }}"
+    api_user: "{{ proxmox_api_user }}"
+    api_token_id: "{{ proxmox_api_token_id }}"          # from SOPS / a vault, never the repo
+    api_token_secret: "{{ proxmox_api_token_secret }}"
+    node: "{{ proxmox_node }}"
+    vmid: "{{ vm_spec.vmid }}"
+    name: "{{ vm_spec.name }}"
+    cores: "{{ vm_spec.cores | default(2) }}"
+    memory: "{{ vm_spec.memory | default(4096) }}"
+    scsihw: "{{ vm_spec.scsihw | default('virtio-scsi-single') }}"
+    ostype: "{{ vm_spec.ostype | default('l26') }}"
+    net: "{{ vm_spec.net | default({'net0': 'virtio,bridge=vmbr0'}) }}"
+    # NOTE: no 'numa: true' here on purpose — community.general 12.x changed numa to a dict
+    # and the bare boolean started failing. See requirements.yml / the README.
+    state: present
+  register: vm_create
+
+- name: "Start VM {{ vm_spec.vmid }}"
+  community.general.proxmox_kvm:
+    api_host: "{{ proxmox_api_host }}"
+    api_user: "{{ proxmox_api_user }}"
+    api_token_id: "{{ proxmox_api_token_id }}"
+    api_token_secret: "{{ proxmox_api_token_secret }}"
+    node: "{{ proxmox_node }}"
+    vmid: "{{ vm_spec.vmid }}"
+    state: started
+  when: vm_spec.autostart | default(true)

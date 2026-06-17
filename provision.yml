@@ -1,0 +1,10 @@
+---
+# Build every VM in the inventory from its per-host spec. Run with --check first to see the
+# delta before anything is created:
+#   ansible-playbook provision.yml --check
+- name: Provision lab VMs from per-host specs
+  hosts: proxmox_vms
+  connection: local            # proxmox_kvm talks to the API, not into the guest
+  gather_facts: false
+  roles:
+    - proxmox_vm

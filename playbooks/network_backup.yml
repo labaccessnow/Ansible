@@ -1,0 +1,14 @@
+---
+# Config backup as code. Uses cisco.ios's native backup option, so it's idempotent and
+# diffable — run it on a schedule and the repo becomes your config history.
+#   ansible-playbook playbooks/network_backup.yml
+- name: Back up IOS running-config
+  hosts: ios
+  gather_facts: false
+  tasks:
+    - name: Pull running-config to ./backups
+      cisco.ios.ios_config:
+        backup: true
+        backup_options:
+          dir_path: ./backups
+          filename: "{{ inventory_hostname }}.cfg"
