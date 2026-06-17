@@ -1,0 +1,15 @@
+---
+# Event-Driven Ansible: react to a critical Alertmanager alert and remediate.
+#   ansible-rulebook -i inventory.yml -r rulebooks/alert_remediation.yml
+- name: Alert-driven remediation
+  hosts: all
+  sources:
+    - ansible.eda.alertmanager:
+        host: 0.0.0.0
+        port: 5000
+  rules:
+    - name: Quarantine on a critical port flap
+      condition: event.payload.labels.severity == "critical"
+      action:
+        run_playbook:
+          name: playbooks/quarantine_port.yml
